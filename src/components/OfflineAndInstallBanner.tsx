@@ -103,8 +103,13 @@ export const OfflineAndInstallBanner: React.FC<OfflineAndInstallBannerProps> = (
     }
   };
 
+  const hasContent = isOffline || installedSuccess || (showInstallBanner && !isOffline);
+  if (!hasContent) {
+    return null;
+  }
+
   return (
-    <aside aria-label="Avisos del sistema" className="no-print space-y-2 mb-2.5">
+    <aside aria-label="Avisos del sistema" className="no-print space-y-2 mb-2.5 px-3 sm:px-4 max-w-4xl mx-auto pt-2">
       {/* Offline Status Alert Pill */}
       {isOffline && (
         <div

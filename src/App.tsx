@@ -491,10 +491,14 @@ export default function App() {
         id="main-app-viewport"
         style={{
           paddingBottom: 'calc(5.25rem + env(safe-area-inset-bottom, 0px))',
-          paddingLeft: 'max(0.75rem, env(safe-area-inset-left, 0px))',
-          paddingRight: 'max(0.75rem, env(safe-area-inset-right, 0px))'
+          paddingLeft: activeTab === 'today' ? 0 : 'max(0.75rem, env(safe-area-inset-left, 0px))',
+          paddingRight: activeTab === 'today' ? 0 : 'max(0.75rem, env(safe-area-inset-right, 0px))'
         }}
-        className="flex-1 w-full max-w-md landscape:max-w-4xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto py-2.5 sm:py-4 px-2.5 sm:px-4 md:px-6 transition-[max-width] duration-150 md:!pb-8"
+        className={`flex-1 w-full mx-auto transition-[max-width] duration-150 md:!pb-8 ${
+          activeTab === 'today'
+            ? 'p-0 max-w-full'
+            : 'max-w-md landscape:max-w-4xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl py-2.5 sm:py-4 px-2.5 sm:px-4 md:px-6'
+        }`}
       >
         {/* Proactive Notification Permission Prompt for Android / Mobile */}
         <NotificationPermissionPrompt

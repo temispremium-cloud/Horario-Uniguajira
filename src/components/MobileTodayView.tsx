@@ -24,6 +24,7 @@ import {
   getLocalDateIso
 } from '../utils/scheduleStatus';
 import { CourseSessionDatesTimeline } from './CourseSessionDatesTimeline';
+import { ArjunHeroCard } from './ArjunHeroCard';
 import { toHumanTitleCase, formatCleanTimeRange } from '../utils/textUtils';
 
 interface MobileTodayViewProps {
@@ -123,229 +124,77 @@ export const MobileTodayView: React.FC<MobileTodayViewProps> = ({
 
   return (
     <div className="space-y-2.5 pb-20 animate-in fade-in duration-200">
-      {/* 2. DYNAMIC MAIN HERO CARD: 'CLASE ACTUAL' vs 'PRÓXIMA CLASE' (Clean Human Light Theme) */}
+      {/* 2. DYNAMIC MAIN HERO CARD: 'CLASE ACTUAL' vs 'PRÓXIMA CLASE' (Arjun Amgain Timeline Style) */}
       {activeClass ? (
-        // =========================================================================
-        // CASE 1: CLASE ACTUAL (In progress right now)
-        // Background #EAF2F8 and pure black text #000000 as requested
-        // =========================================================================
-        <div
-          id="card-clase-actual"
-          onClick={() => onSelectCourse(activeClass.course)}
-          className="hero-card-celeste p-4 sm:p-5 rounded-xl cursor-pointer active:scale-[0.99] transition-all space-y-3 border border-[#9ecdf0]"
-          style={{ backgroundColor: '#BFE3FA', color: '#000000' }}
-        >
-          {/* Header row: Status and subtle notifications switch */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-              <span className="text-xs font-bold tracking-wide text-emerald-800">
-                Clase en curso
-              </span>
-              <span className="text-slate-400">•</span>
-              <span className="text-xs text-[#000000] font-medium opacity-80">
-                Termina a las {activeClass.course.endTime24}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenNotificationSettings();
-              }}
-              title={notificationsEnabled ? 'Recordatorios activos' : 'Configurar recordatorios'}
-              className="p-1.5 rounded-lg text-[#000000] hover:bg-black/5 transition-colors cursor-pointer"
-            >
-              {notificationsEnabled ? (
-                <BellRing className="w-3.5 h-3.5 text-amber-600" />
-              ) : (
-                <Bell className="w-3.5 h-3.5" />
-              )}
-            </button>
-          </div>
-
-          {/* Course Name in clean Human Title Case */}
-          <div>
-            <div className="flex items-center gap-2 text-[11.5px] text-[#000000] opacity-75 font-mono mb-1">
-              <span>Cód. {activeClass.course.codeNumber}</span>
-              <span>•</span>
-              <span>{activeClass.course.group}</span>
-              <span>•</span>
-              <span>{activeClass.course.moduleName}</span>
-            </div>
-            <h2 className="font-bold text-lg sm:text-xl leading-snug text-[#000000]">
-              {toHumanTitleCase(activeClass.course.name)}
-            </h2>
-          </div>
-
-          {/* Single clean line for Schedule & Room */}
-          <div className="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-xs text-[#000000]">
-            <span className="font-medium text-[#000000]">{formatCleanTimeRange(activeClass.course.timeRange)}</span>
-            <span className="text-slate-400 hidden sm:inline">•</span>
-            <span className="text-[#000000] bg-white/85 border border-slate-300/70 px-2 py-0.5 rounded text-[11px] font-medium">
-              {activeClass.course.classroom || 'Aula por asignar'}
-            </span>
-          </div>
-
-          {/* Teacher name */}
-          <div className="text-xs text-[#000000] flex items-center gap-1.5">
-            <span>Docente: <strong className="font-semibold text-[#000000]">{toHumanTitleCase(activeClass.course.professor)}</strong></span>
-          </div>
-
-          {/* Progress indicator */}
-          <div className="pt-0.5 space-y-1.5">
-            <div className="flex items-center justify-between text-xs text-[#000000]">
-              <span>Tiempo restante: <strong className="text-[#000000] font-mono font-bold">{formatCountdownHuman(activeClass.secondsRemaining || 0)}</strong></span>
-              <span className="font-mono text-[11px] text-[#000000] font-semibold">{activeClass.progressPercent}%</span>
-            </div>
-            <div className="w-full bg-[#d5e4ef] rounded-full h-1.5 overflow-hidden">
-              <div
-                className="bg-emerald-600 h-full rounded-full transition-all duration-1000"
-                style={{ width: `${activeClass.progressPercent}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Session dates clean row */}
-          <div className="pt-2 border-t border-[#d4e2ee]">
-            <CourseSessionDatesTimeline course={activeClass.course} currentTime={currentTime} isDark={false} />
-          </div>
-
-          {/* Bottom discreet action */}
-          <div className="pt-0.5 flex items-center justify-end text-xs text-[#000000]">
-            <span className="flex items-center gap-1 font-semibold hover:underline transition-colors">
-              Ver detalles de la materia <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-        </div>
+        <ArjunHeroCard
+          course={activeClass.course}
+          isActive={true}
+          activeSecondsRemaining={activeClass.secondsRemaining}
+          activeProgressPercent={activeClass.progressPercent}
+          isUpcomingToday={false}
+          todayCompletedCount={todayCompletedCount}
+          isClassDay={isClassDay}
+          currentDayName={currentDayName}
+          currentTime={currentTime}
+          notificationsEnabled={notificationsEnabled}
+          onOpenNotificationSettings={onOpenNotificationSettings}
+          onSelectCourse={onSelectCourse}
+          onGoToTasks={onGoToTasks}
+          onGoToCalendar={onGoToCalendar}
+          onGoToOfficialSheet={onGoToOfficialSheet}
+        />
       ) : targetNextClass ? (
-        // =========================================================================
-        // CASE 2: PRÓXIMA CLASE / PRÓXIMA SESIÓN PROGRAMADA
-        // Background #EAF2F8 and pure black text #000000 as requested
-        // =========================================================================
-        <div
-          id="card-proxima-clase"
-          onClick={() => onSelectCourse(targetNextClass.course)}
-          className="hero-card-celeste p-4 sm:p-5 rounded-xl cursor-pointer active:scale-[0.99] transition-all space-y-3 border border-[#9ecdf0]"
-          style={{ backgroundColor: '#BFE3FA', color: '#000000' }}
-        >
-          {/* Header row: subtle text label and clean notification switch */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-[#000000] font-medium opacity-80">
-                {isUpcomingToday ? 'Próxima clase hoy' : 'Próxima sesión programada'}
-              </span>
-              <span className="text-slate-400">•</span>
-              <span className="text-[#000000] font-bold">
-                {isUpcomingToday ? `Hoy a las ${targetNextClass.course.startTime24}` : targetNextClass.dateFormatted}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenNotificationSettings();
-              }}
-              title={notificationsEnabled ? 'Recordatorios activos' : 'Configurar recordatorios'}
-              className="p-1.5 rounded-lg text-[#000000] hover:bg-black/5 transition-colors cursor-pointer"
-            >
-              {notificationsEnabled ? (
-                <BellRing className="w-3.5 h-3.5 text-amber-600" />
-              ) : (
-                <Bell className="w-3.5 h-3.5" />
-              )}
-            </button>
-          </div>
-
-          {/* Course Name in clean Human Title Case */}
-          <div>
-            <div className="flex items-center gap-2 text-[11.5px] text-[#000000] opacity-75 font-mono mb-1">
-              <span>Cód. {targetNextClass.course.codeNumber}</span>
-              <span>•</span>
-              <span>{targetNextClass.course.day}</span>
-              <span>•</span>
-              <span>{targetNextClass.course.moduleName}</span>
-            </div>
-            <h2 className="font-bold text-lg sm:text-xl leading-snug text-[#000000]">
-              {toHumanTitleCase(targetNextClass.course.name)}
-            </h2>
-          </div>
-
-          {/* Single clean line for Date, Time & Room */}
-          <div className="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-xs text-[#000000]">
-            <span className="font-medium text-[#000000]">{formatCleanTimeRange(targetNextClass.course.timeRange)}</span>
-            <span className="text-slate-400 hidden sm:inline">•</span>
-            <span className="text-[#000000] bg-white/85 border border-slate-300/70 px-2 py-0.5 rounded text-[11px] font-medium">
-              {targetNextClass.course.classroom || 'Aula por asignar'}
-            </span>
-          </div>
-
-          {/* Teacher name */}
-          <div className="text-xs text-[#000000] flex items-center gap-1.5">
-            <span>Docente: <strong className="font-semibold text-[#000000]">{toHumanTitleCase(targetNextClass.course.professor)}</strong></span>
-          </div>
-
-          {/* Context status when class is later today */}
-          {todayCompletedCount > 0 && isClassDay && !upcomingToday ? (
-            <div className="text-xs text-[#000000] flex items-center gap-2 pt-1 border-t border-[#d4e2ee]">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Has finalizado las clases presenciales de hoy {currentDayName}.</span>
-            </div>
-          ) : isUpcomingToday && upcomingToday?.timeUntilStartMinutes !== undefined ? (
-            <div className="text-xs text-[#000000] bg-white/80 px-2.5 py-1.5 rounded-lg border border-slate-200/80 flex items-center gap-2">
-              <span className="font-medium">Inicia en {formatDuration(upcomingToday.timeUntilStartMinutes)}</span>
-            </div>
-          ) : null}
-
-          {/* Clean Session Timeline */}
-          <div className="pt-2 border-t border-[#d4e2ee]">
-            <CourseSessionDatesTimeline course={targetNextClass.course} currentTime={currentTime} isDark={false} />
-          </div>
-
-          {/* Discreet Footer link */}
-          <div className="pt-0.5 flex items-center justify-between text-xs text-[#000000]">
-            <span className="text-[11px] text-[#000000] opacity-75">
-              {notificationsEnabled ? 'Recordatorio activo 1h antes' : 'Recordatorios desactivados'}
-            </span>
-            <span className="flex items-center gap-1 text-[#000000] font-semibold hover:underline transition-colors">
-              Ver detalles <ChevronRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-        </div>
+        <ArjunHeroCard
+          course={targetNextClass.course}
+          isActive={false}
+          isUpcomingToday={isUpcomingToday}
+          upcomingDateFormatted={isUpcomingToday ? `Hoy a las ${targetNextClass.course.startTime24}` : targetNextClass.dateFormatted}
+          upcomingTimeUntilStartMinutes={upcomingToday?.timeUntilStartMinutes}
+          todayCompletedCount={todayCompletedCount}
+          isClassDay={isClassDay}
+          currentDayName={currentDayName}
+          currentTime={currentTime}
+          notificationsEnabled={notificationsEnabled}
+          onOpenNotificationSettings={onOpenNotificationSettings}
+          onSelectCourse={onSelectCourse}
+          onGoToTasks={onGoToTasks}
+          onGoToCalendar={onGoToCalendar}
+          onGoToOfficialSheet={onGoToOfficialSheet}
+        />
       ) : null}
 
-      {/* 3. Pending Tasks Alert Card (Neutral Clean Theme) */}
-      {pendingTasks.length > 0 && onGoToTasks && (
-        <div
-          id="card-pending-tasks-alert"
-          onClick={onGoToTasks}
-          className="bg-slate-50 border border-slate-200 p-2.5 rounded-lg flex items-center justify-between gap-2 cursor-pointer active:scale-98 transition-all hover:bg-slate-100"
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-md bg-slate-200/80 flex items-center justify-center text-slate-700 shrink-0">
-              <CheckSquare className="w-3.5 h-3.5" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold text-slate-900 truncate">
-                  {pendingTasks.length} compromiso{pendingTasks.length !== 1 ? 's' : ''} pendiente{pendingTasks.length !== 1 ? 's' : ''}
-                </span>
-                {nextUrgentTask && (
-                  <span className="text-[9.5px] bg-slate-200 text-slate-800 px-1.5 py-0.2 rounded font-medium shrink-0">
-                    {nextUrgentTask.type === 'Otro' && nextUrgentTask.customType ? nextUrgentTask.customType : nextUrgentTask.type}
-                  </span>
-                )}
+      {/* Centered container for secondary sections */}
+      <div className="max-w-4xl mx-auto px-3 sm:px-4 space-y-3 pt-2 sm:pt-3">
+        {/* 3. Pending Tasks Alert Card (Neutral Clean Theme) */}
+        {pendingTasks.length > 0 && onGoToTasks && (
+          <div
+            id="card-pending-tasks-alert"
+            onClick={onGoToTasks}
+            className="bg-slate-50 border border-slate-200 p-2.5 rounded-lg flex items-center justify-between gap-2 cursor-pointer active:scale-98 transition-all hover:bg-slate-100"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-md bg-slate-200/80 flex items-center justify-center text-slate-700 shrink-0">
+                <CheckSquare className="w-3.5 h-3.5" />
               </div>
-              <p className="text-[10.5px] text-slate-600 truncate">
-                {nextUrgentTask ? `${nextUrgentTask.title} • Entrega: ${nextUrgentTask.dueDate}` : 'Toca para revisar tus compromisos y notas'}
-              </p>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-slate-900 truncate">
+                    {pendingTasks.length} compromiso{pendingTasks.length !== 1 ? 's' : ''} pendiente{pendingTasks.length !== 1 ? 's' : ''}
+                  </span>
+                  {nextUrgentTask && (
+                    <span className="text-[9.5px] bg-slate-200 text-slate-800 px-1.5 py-0.2 rounded font-medium shrink-0">
+                      {nextUrgentTask.type === 'Otro' && nextUrgentTask.customType ? nextUrgentTask.customType : nextUrgentTask.type}
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10.5px] text-slate-600 truncate">
+                  {nextUrgentTask ? `${nextUrgentTask.title} • Entrega: ${nextUrgentTask.dueDate}` : 'Toca para revisar tus compromisos y notas'}
+                </p>
+              </div>
             </div>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
           </div>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-        </div>
-      )}
+        )}
 
       {/* 4. Module Selector Tabs */}
       <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs space-y-1.5">
@@ -566,5 +415,6 @@ export const MobileTodayView: React.FC<MobileTodayViewProps> = ({
         </button>
       </div>
     </div>
-  );
+  </div>
+);
 };
