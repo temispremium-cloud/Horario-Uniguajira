@@ -95,44 +95,41 @@ export const NotificationPermissionPrompt: React.FC<NotificationPermissionPrompt
   return (
     <div
       id="notification-permission-banner"
-      className="bg-linear-to-r from-red-600 via-[#b7191f] to-rose-700 text-white p-3.5 sm:p-4 rounded-2xl shadow-lg border border-red-500/40 animate-fadeIn mb-4 relative overflow-hidden"
+      className="bg-white text-slate-800 p-3.5 sm:p-4 rounded-xl shadow-xs border border-slate-200/90 animate-fadeIn mb-3 relative overflow-hidden"
     >
-      {/* Background soft glow */}
-      <div className="absolute -right-8 -bottom-8 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" />
-
-      <div className="flex items-start justify-between gap-3 relative z-10">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-            <BellRing className="w-5 h-5 text-amber-300 animate-bounce" />
+          <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center shrink-0 mt-0.5">
+            <BellRing className="w-4 h-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-white text-sm sm:text-base leading-tight">
-              ¿Activar Recordatorios de Clase?
+            <h4 className="font-semibold text-slate-900 text-xs sm:text-sm leading-snug">
+              ¿Activar recordatorios de clase?
             </h4>
-            <p className="text-xs text-red-100 mt-1 leading-relaxed">
-              Recibe avisos en tu celular antes de iniciar cada clase los viernes y sábados, y alertas de tareas o parciales del Grupo C1.
+            <p className="text-[11.5px] text-slate-500 mt-0.5 leading-relaxed">
+              Recibe avisos antes de iniciar cada clase de los viernes y sábados, y alertas para parciales del Grupo C1.
             </p>
 
             {isSuccess ? (
-              <div className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/40 px-3 py-1.5 rounded-lg w-fit">
-                <CheckCircle2 className="w-4 h-4" />
-                <span>¡Recordatorios activados en este dispositivo!</span>
+              <div className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/60 w-fit">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Recordatorios activados en este dispositivo</span>
               </div>
             ) : (
-              <div className="mt-3 flex items-center gap-2 flex-wrap">
+              <div className="mt-2.5 flex items-center gap-2 flex-wrap">
                 <button
                   id="btn-activate-notifications-prompt"
                   onClick={handleActivate}
                   disabled={isActivating}
-                  className="min-h-[40px] px-4 py-2 bg-white hover:bg-slate-100 text-[#b7191f] font-bold text-xs sm:text-sm rounded-xl shadow-md cursor-pointer transition-transform active:scale-95 flex items-center gap-1.5"
+                  className="min-h-[34px] px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs rounded-lg shadow-2xs cursor-pointer transition-colors flex items-center gap-1.5"
                 >
-                  <BellRing className="w-3.5 h-3.5" />
-                  <span>{isActivating ? 'Activando...' : 'Permitir y Activar Alertas'}</span>
+                  <BellRing className="w-3 h-3" />
+                  <span>{isActivating ? 'Activando...' : 'Permitir alertas'}</span>
                 </button>
                 <button
                   id="btn-dismiss-notifications-prompt"
                   onClick={handleDismiss}
-                  className="min-h-[40px] px-3 py-2 text-white/80 hover:text-white text-xs font-medium rounded-xl hover:bg-white/10 cursor-pointer"
+                  className="min-h-[34px] px-2.5 py-1.5 text-slate-500 hover:text-slate-800 text-xs font-medium rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
                 >
                   Ahora no
                 </button>
@@ -143,16 +140,16 @@ export const NotificationPermissionPrompt: React.FC<NotificationPermissionPrompt
 
         <button
           onClick={handleDismiss}
-          className="p-1 text-white/70 hover:text-white hover:bg-white/10 rounded-lg cursor-pointer shrink-0"
+          className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md cursor-pointer shrink-0 transition-colors"
           aria-label="Cerrar aviso"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
 
       {isAndroidDevice() && !isSuccess && (
-        <p className="text-[10px] text-red-200/80 mt-2 pt-2 border-t border-white/15">
-          * En celulares Android se te solicitará confirmar el permiso del sistema al presionar &quot;Permitir&quot;.
+        <p className="text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-100">
+          En Android se te solicitará confirmar el permiso del sistema al presionar &quot;Permitir alertas&quot;.
         </p>
       )}
     </div>

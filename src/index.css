@@ -8,6 +8,7 @@
   --color-primary-subtle: #fee2e2;
   --color-primary-border: #fca5a5;
   --color-primary-dark: #660e12;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* Institutional Design System Utilities */
@@ -18,11 +19,24 @@
   --uniguajira-red-light: #fef2f2;
   --surface-border: #e2e8f0;
   --surface-bg: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
 }
 
 ::selection {
   background-color: #b7191f;
   color: #ffffff;
+}
+
+/* Hero Schedule Card - Soft Sky Blue #BFE3FA with Black Text #000000 */
+.hero-card-celeste {
+  background-color: #BFE3FA !important;
+  color: #000000 !important;
+  border-radius: 0.75rem !important; /* 12px clean modern radius */
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  border: 1px solid #9ecdf0 !important;
 }
 
 /* Stable institutional card component */
@@ -216,6 +230,11 @@ body,
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
 }
 
 /* Smooth layout and safe area handling during device rotation */

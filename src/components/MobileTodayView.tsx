@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ModularCourse, TaskItem } from '../types';
 import {
-  CalendarClock,
-  Clock,
-  User,
-  MapPin,
-  Calendar,
   Sparkles,
   ChevronRight,
-  BookOpen,
   ArrowRight,
   CheckCircle2,
   FileText,
@@ -30,6 +24,7 @@ import {
   getLocalDateIso
 } from '../utils/scheduleStatus';
 import { CourseSessionDatesTimeline } from './CourseSessionDatesTimeline';
+import { toHumanTitleCase, formatCleanTimeRange } from '../utils/textUtils';
 
 interface MobileTodayViewProps {
   courses: ModularCourse[];
@@ -128,231 +123,194 @@ export const MobileTodayView: React.FC<MobileTodayViewProps> = ({
 
   return (
     <div className="space-y-2.5 pb-20 animate-in fade-in duration-200">
-      {/* 2. DYNAMIC MAIN HERO CARD: 'CLASE ACTUAL' vs 'PRÓXIMA CLASE' (Sober Institutional Palette) */}
+      {/* 2. DYNAMIC MAIN HERO CARD: 'CLASE ACTUAL' vs 'PRÓXIMA CLASE' (Clean Human Light Theme) */}
       {activeClass ? (
         // =========================================================================
         // CASE 1: CLASE ACTUAL (In progress right now)
-        // Elegant dark slate card matching official institutional design
+        // Background #EAF2F8 and pure black text #000000 as requested
         // =========================================================================
         <div
           id="card-clase-actual"
           onClick={() => onSelectCourse(activeClass.course)}
-          className="bg-[#0f172a] text-white p-3.5 sm:p-4 rounded-xl border border-slate-800 shadow-sm cursor-pointer active:scale-[0.99] transition-all relative overflow-hidden space-y-2.5"
+          className="hero-card-celeste p-4 sm:p-5 rounded-xl cursor-pointer active:scale-[0.99] transition-all space-y-3 border border-[#9ecdf0]"
+          style={{ backgroundColor: '#BFE3FA', color: '#000000' }}
         >
-          {/* Top Status Header */}
+          {/* Header row: Status and subtle notifications switch */}
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 bg-slate-800 border border-slate-700 text-slate-200 px-2 py-0.5 rounded-md text-[11px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#b7191f] animate-pulse" />
-              CLASE ACTUAL
-            </span>
-            <span className="text-[11px] text-slate-300">
-              Termina a las {activeClass.course.endTime24}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+              <span className="text-xs font-bold tracking-wide text-emerald-800">
+                Clase en curso
+              </span>
+              <span className="text-slate-400">•</span>
+              <span className="text-xs text-[#000000] font-medium opacity-80">
+                Termina a las {activeClass.course.endTime24}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenNotificationSettings();
+              }}
+              title={notificationsEnabled ? 'Recordatorios activos' : 'Configurar recordatorios'}
+              className="p-1.5 rounded-lg text-[#000000] hover:bg-black/5 transition-colors cursor-pointer"
+            >
+              {notificationsEnabled ? (
+                <BellRing className="w-3.5 h-3.5 text-amber-600" />
+              ) : (
+                <Bell className="w-3.5 h-3.5" />
+              )}
+            </button>
           </div>
 
-          {/* Course Name & Group */}
+          {/* Course Name in clean Human Title Case */}
           <div>
-            <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 font-mono mb-0.5">
+            <div className="flex items-center gap-2 text-[11.5px] text-[#000000] opacity-75 font-mono mb-1">
               <span>Cód. {activeClass.course.codeNumber}</span>
               <span>•</span>
               <span>{activeClass.course.group}</span>
               <span>•</span>
               <span>{activeClass.course.moduleName}</span>
             </div>
-            <h2 className="font-bold text-base sm:text-lg leading-snug text-white">
-              {activeClass.course.name}
+            <h2 className="font-bold text-lg sm:text-xl leading-snug text-[#000000]">
+              {toHumanTitleCase(activeClass.course.name)}
             </h2>
           </div>
 
-          {/* VISUAL COUNTDOWN INDICATOR (TIEMPO RESTANTE) */}
-          <div
-            id="clase-actual-countdown-widget"
-            className="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700/60 space-y-1.5"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-medium text-slate-300 flex items-center gap-1.5">
-                <Timer className="w-3 h-3 text-slate-400" /> Tiempo restante de clase
-              </span>
-              <span className="text-[10.5px] font-mono text-slate-400 font-medium">
-                {activeClass.progressPercent}% transcurrido
-              </span>
-            </div>
+          {/* Single clean line for Schedule & Room */}
+          <div className="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-xs text-[#000000]">
+            <span className="font-medium text-[#000000]">{formatCleanTimeRange(activeClass.course.timeRange)}</span>
+            <span className="text-slate-400 hidden sm:inline">•</span>
+            <span className="text-[#000000] bg-white/85 border border-slate-300/70 px-2 py-0.5 rounded text-[11px] font-medium">
+              {activeClass.course.classroom || 'Aula por asignar'}
+            </span>
+          </div>
 
-            {/* Large Digital Countdown Clock */}
-            <div className="flex items-baseline justify-between gap-2">
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-mono font-bold text-xl sm:text-2xl text-white tracking-wider">
-                  {formatCountdownClock(activeClass.secondsRemaining || 0)}
-                </span>
-                <span className="text-[11px] text-slate-400 font-medium">restantes</span>
-              </div>
-              <span className="text-[11px] text-slate-300 font-medium text-right">
-                Quedan {formatCountdownHuman(activeClass.secondsRemaining || 0)}
-              </span>
-            </div>
+          {/* Teacher name */}
+          <div className="text-xs text-[#000000] flex items-center gap-1.5">
+            <span>Docente: <strong className="font-semibold text-[#000000]">{toHumanTitleCase(activeClass.course.professor)}</strong></span>
+          </div>
 
-            {/* Clean Progress Bar with UniGuajira Red */}
-            <div className="w-full bg-slate-700/50 rounded-full h-1.5 overflow-hidden">
+          {/* Progress indicator */}
+          <div className="pt-0.5 space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-[#000000]">
+              <span>Tiempo restante: <strong className="text-[#000000] font-mono font-bold">{formatCountdownHuman(activeClass.secondsRemaining || 0)}</strong></span>
+              <span className="font-mono text-[11px] text-[#000000] font-semibold">{activeClass.progressPercent}%</span>
+            </div>
+            <div className="w-full bg-[#d5e4ef] rounded-full h-1.5 overflow-hidden">
               <div
-                className="bg-[#b7191f] h-full rounded-full transition-all duration-1000"
+                className="bg-emerald-600 h-full rounded-full transition-all duration-1000"
                 style={{ width: `${activeClass.progressPercent}%` }}
               />
             </div>
-
-            {/* Time Breakdown */}
-            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
-              <span>Inicio: {activeClass.course.startTime24}</span>
-              <span>Transcurrido: {formatDuration(activeClass.minutesElapsed || 0)}</span>
-              <span>Fin: {activeClass.course.endTime24}</span>
-            </div>
           </div>
 
-          {/* Course Details Grid */}
-          <div className="grid grid-cols-2 gap-1.5 text-[11px] text-slate-300 pt-0.5">
-            <div className="flex items-center gap-1.5 bg-slate-800/40 px-2 py-1 rounded border border-slate-700/30 truncate">
-              <Clock className="w-3 h-3 text-slate-400 shrink-0" />
-              <span className="truncate font-medium">{activeClass.course.timeRange}</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-slate-800/40 px-2 py-1 rounded border border-slate-700/30 truncate">
-              <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-              <span className="truncate font-medium">{activeClass.course.classroom || 'Aula por asignar'}</span>
-            </div>
+          {/* Session dates clean row */}
+          <div className="pt-2 border-t border-[#d4e2ee]">
+            <CourseSessionDatesTimeline course={activeClass.course} currentTime={currentTime} isDark={false} />
           </div>
 
-          <div className="text-[11px] text-slate-300 flex items-center gap-1.5 px-0.5">
-            <User className="w-3 h-3 text-slate-400 shrink-0" />
-            <span className="truncate font-medium">Docente: {activeClass.course.professor}</span>
-          </div>
-
-          {/* Session timeline with strikethrough for past dates */}
-          <div className="pt-1.5 border-t border-slate-800">
-            <CourseSessionDatesTimeline course={activeClass.course} currentTime={currentTime} isDark={true} />
-          </div>
-
-          {/* Bottom Action Footer */}
-          <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[11px]">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenNotificationSettings();
-              }}
-              className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors text-[11px] font-medium bg-slate-800 px-2 py-0.5 rounded cursor-pointer border border-slate-700/50"
-            >
-              <Bell className="w-3 h-3" />
-              <span>
-                {notificationsEnabled ? 'Recordatorios activos' : 'Activar recordatorios'}
-              </span>
-            </button>
-
-            <span className="text-slate-300 font-medium flex items-center gap-1 text-[11px] shrink-0 hover:underline">
-              Ver detalles <ChevronRight className="w-3 h-3" />
+          {/* Bottom discreet action */}
+          <div className="pt-0.5 flex items-center justify-end text-xs text-[#000000]">
+            <span className="flex items-center gap-1 font-semibold hover:underline transition-colors">
+              Ver detalles de la materia <ChevronRight className="w-3.5 h-3.5" />
             </span>
           </div>
         </div>
       ) : targetNextClass ? (
         // =========================================================================
-        // CASE 2: PRÓXIMA CLASE / PRÓXIMA SESIÓN PROGRAMADA (Matching image.png)
+        // CASE 2: PRÓXIMA CLASE / PRÓXIMA SESIÓN PROGRAMADA
+        // Background #EAF2F8 and pure black text #000000 as requested
         // =========================================================================
         <div
           id="card-proxima-clase"
           onClick={() => onSelectCourse(targetNextClass.course)}
-          className="bg-[#0f172a] text-white p-3.5 sm:p-4 rounded-xl border border-slate-800 shadow-sm cursor-pointer active:scale-[0.99] transition-all relative overflow-hidden space-y-2.5"
+          className="hero-card-celeste p-4 sm:p-5 rounded-xl cursor-pointer active:scale-[0.99] transition-all space-y-3 border border-[#9ecdf0]"
+          style={{ backgroundColor: '#BFE3FA', color: '#000000' }}
         >
-          {/* Top Status Badge */}
+          {/* Header row: subtle text label and clean notification switch */}
           <div className="flex items-center justify-between gap-2">
-            <span className="inline-flex items-center gap-1.5 bg-slate-800/80 border border-slate-700/60 text-slate-200 px-2 py-0.5 rounded-md text-[11px] font-semibold">
-              <Clock className="w-3 h-3 text-slate-400" />
-              {isUpcomingToday ? 'PRÓXIMA CLASE' : 'PRÓXIMA SESIÓN PROGRAMADA'}
-            </span>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-[#000000] font-medium opacity-80">
+                {isUpcomingToday ? 'Próxima clase hoy' : 'Próxima sesión programada'}
+              </span>
+              <span className="text-slate-400">•</span>
+              <span className="text-[#000000] font-bold">
+                {isUpcomingToday ? `Hoy a las ${targetNextClass.course.startTime24}` : targetNextClass.dateFormatted}
+              </span>
+            </div>
 
-            <span className="text-[11px] text-slate-300 font-medium">
-              {isUpcomingToday
-                ? `Hoy a las ${targetNextClass.course.startTime24}`
-                : targetNextClass.dateFormatted}
-            </span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenNotificationSettings();
+              }}
+              title={notificationsEnabled ? 'Recordatorios activos' : 'Configurar recordatorios'}
+              className="p-1.5 rounded-lg text-[#000000] hover:bg-black/5 transition-colors cursor-pointer"
+            >
+              {notificationsEnabled ? (
+                <BellRing className="w-3.5 h-3.5 text-amber-600" />
+              ) : (
+                <Bell className="w-3.5 h-3.5" />
+              )}
+            </button>
           </div>
 
-          {/* Course Name */}
+          {/* Course Name in clean Human Title Case */}
           <div>
-            <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 font-mono mb-0.5">
+            <div className="flex items-center gap-2 text-[11.5px] text-[#000000] opacity-75 font-mono mb-1">
               <span>Cód. {targetNextClass.course.codeNumber}</span>
               <span>•</span>
               <span>{targetNextClass.course.day}</span>
               <span>•</span>
               <span>{targetNextClass.course.moduleName}</span>
             </div>
-            <h2 className="font-bold text-sm sm:text-base leading-snug text-white">
-              {targetNextClass.course.name}
+            <h2 className="font-bold text-lg sm:text-xl leading-snug text-[#000000]">
+              {toHumanTitleCase(targetNextClass.course.name)}
             </h2>
           </div>
 
-          {/* Status Box */}
+          {/* Single clean line for Date, Time & Room */}
+          <div className="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-xs text-[#000000]">
+            <span className="font-medium text-[#000000]">{formatCleanTimeRange(targetNextClass.course.timeRange)}</span>
+            <span className="text-slate-400 hidden sm:inline">•</span>
+            <span className="text-[#000000] bg-white/85 border border-slate-300/70 px-2 py-0.5 rounded text-[11px] font-medium">
+              {targetNextClass.course.classroom || 'Aula por asignar'}
+            </span>
+          </div>
+
+          {/* Teacher name */}
+          <div className="text-xs text-[#000000] flex items-center gap-1.5">
+            <span>Docente: <strong className="font-semibold text-[#000000]">{toHumanTitleCase(targetNextClass.course.professor)}</strong></span>
+          </div>
+
+          {/* Context status when class is later today */}
           {todayCompletedCount > 0 && isClassDay && !upcomingToday ? (
-            <div className="p-2 bg-slate-800/60 rounded-lg text-[11px] text-slate-300 flex items-center gap-2 border border-slate-700/60">
-              <CheckCircle2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span>Has finalizado las clases presenciales de hoy {currentDayName}. ¡Buen descanso!</span>
+            <div className="text-xs text-[#000000] flex items-center gap-2 pt-1 border-t border-[#d4e2ee]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Has finalizado las clases presenciales de hoy {currentDayName}.</span>
             </div>
           ) : isUpcomingToday && upcomingToday?.timeUntilStartMinutes !== undefined ? (
-            <div className="p-2 bg-slate-800/60 rounded-lg text-[11px] text-slate-300 flex items-center justify-between border border-slate-700/60">
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3 h-3 text-slate-400" />
-                <span>Inicia en {formatDuration(upcomingToday.timeUntilStartMinutes)}</span>
-              </span>
-              <span className="font-mono text-slate-200 font-medium">
-                Hora: {upcomingToday.course.startTime24}
-              </span>
+            <div className="text-xs text-[#000000] bg-white/80 px-2.5 py-1.5 rounded-lg border border-slate-200/80 flex items-center gap-2">
+              <span className="font-medium">Inicia en {formatDuration(upcomingToday.timeUntilStartMinutes)}</span>
             </div>
-          ) : (
-            <div className="p-2 bg-slate-800/60 rounded-lg text-[11px] text-slate-300 flex items-center justify-between border border-slate-700/60">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="w-3 h-3 text-slate-400" />
-                <span>Fecha: <strong className="capitalize text-white">{targetNextClass.dateFormatted}</strong></span>
-              </span>
-              <span className="text-slate-300 text-xs">
-                {targetNextClass.course.timeRange}
-              </span>
-            </div>
-          )}
+          ) : null}
 
-          {/* Course Details */}
-          <div className="grid grid-cols-2 gap-1.5 text-[11px] text-slate-300 pt-0.5">
-            <div className="flex items-center gap-1.5 bg-slate-800/40 px-2 py-1 rounded border border-slate-700/30 truncate">
-              <Clock className="w-3 h-3 text-slate-400 shrink-0" />
-              <span className="font-medium truncate">{targetNextClass.course.timeRange}</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-slate-800/40 px-2 py-1 rounded border border-slate-700/30 truncate">
-              <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-              <span className="truncate font-medium">{targetNextClass.course.classroom || 'Aula por asignar'}</span>
-            </div>
+          {/* Clean Session Timeline */}
+          <div className="pt-2 border-t border-[#d4e2ee]">
+            <CourseSessionDatesTimeline course={targetNextClass.course} currentTime={currentTime} isDark={false} />
           </div>
 
-          <div className="text-[11px] text-slate-300 flex items-center gap-1.5 px-0.5">
-            <User className="w-3 h-3 text-slate-400 shrink-0" />
-            <span className="truncate font-medium">Docente: {targetNextClass.course.professor}</span>
-          </div>
-
-          {/* Session timeline with strikethrough for past dates */}
-          <div className="pt-1.5 border-t border-slate-800">
-            <CourseSessionDatesTimeline course={targetNextClass.course} currentTime={currentTime} isDark={true} />
-          </div>
-
-          {/* Bottom Action Bar */}
-          <div className="pt-1.5 border-t border-slate-800 flex items-center justify-between text-[11px]">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenNotificationSettings();
-              }}
-              className="flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors text-[11px] font-medium bg-slate-800 px-2 py-0.5 rounded cursor-pointer border border-slate-700/50"
-            >
-              <Bell className="w-3 h-3" />
-              <span>
-                {notificationsEnabled ? 'Recordatorios activos' : 'Activar recordatorios'}
-              </span>
-            </button>
-
-            <span className="text-slate-300 font-medium flex items-center gap-1 text-[11px] shrink-0 hover:underline">
-              Ver detalles <ChevronRight className="w-3 h-3" />
+          {/* Discreet Footer link */}
+          <div className="pt-0.5 flex items-center justify-between text-xs text-[#000000]">
+            <span className="text-[11px] text-[#000000] opacity-75">
+              {notificationsEnabled ? 'Recordatorio activo 1h antes' : 'Recordatorios desactivados'}
+            </span>
+            <span className="flex items-center gap-1 text-[#000000] font-semibold hover:underline transition-colors">
+              Ver detalles <ChevronRight className="w-3.5 h-3.5" />
             </span>
           </div>
         </div>
@@ -392,8 +350,8 @@ export const MobileTodayView: React.FC<MobileTodayViewProps> = ({
       {/* 4. Module Selector Tabs */}
       <div className="bg-white p-2.5 rounded-lg border border-slate-200 shadow-2xs space-y-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-slate-900 uppercase tracking-wide flex items-center gap-1.5">
-            <BookOpen className="w-3 h-3 text-slate-500" /> Módulos Académicos
+          <span className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+            Módulos Académicos
           </span>
           <button
             onClick={onGoToCalendar}
@@ -446,7 +404,6 @@ export const MobileTodayView: React.FC<MobileTodayViewProps> = ({
       <div className="bg-white p-2.5 sm:p-3 rounded-lg border border-slate-200 shadow-2xs space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <CalendarClock className="w-3.5 h-3.5 text-slate-500" />
             <h3 className="font-bold text-xs sm:text-sm text-slate-900">
               Jornada Presencial
             </h3>
@@ -513,29 +470,26 @@ export const MobileTodayView: React.FC<MobileTodayViewProps> = ({
                     isCourseCurrent
                       ? 'border-emerald-500 bg-emerald-50/40 shadow-xs'
                       : isCourseFinished
-                      ? 'border-red-200/80 bg-red-50/25'
+                      ? 'border-slate-200/80 bg-slate-50/60 opacity-80'
                       : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-2xs active:scale-[0.99]'
                   }`}
                 >
                   {/* Top status & timing */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <Clock className={`w-3 h-3 ${isCourseCurrent ? 'text-emerald-700 font-bold' : isCourseFinished ? 'text-red-700' : 'text-slate-400'}`} />
-                      <span className={`text-xs ${isCourseCurrent ? 'text-emerald-950 font-bold' : isCourseFinished ? 'text-red-950 font-semibold' : 'font-semibold text-slate-800'}`}>
-                        {course.timeRange}
-                      </span>
-                    </div>
+                    <span className={`text-xs ${isCourseCurrent ? 'text-emerald-950 font-bold' : isCourseFinished ? 'text-slate-600 font-medium' : 'font-semibold text-slate-800'}`}>
+                      {formatCleanTimeRange(course.timeRange)}
+                    </span>
 
                     <div className="flex items-center gap-1.5">
                       {isCourseCurrent && (
-                        <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[9.5px] font-bold px-2 py-0.5 rounded-full shadow-2xs">
+                        <span className="inline-flex items-center gap-1 bg-emerald-600 text-white text-[9.5px] font-semibold px-2 py-0.5 rounded shadow-2xs">
                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                           En curso • {formatCountdownClock(secondsRemaining)}
                         </span>
                       )}
                       {isCourseFinished && (
-                        <span className="inline-flex items-center gap-1 text-[9.5px] font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full shadow-2xs">
-                          <span className="w-1 h-1 rounded-full bg-white" />
+                        <span className="inline-flex items-center gap-1 text-[9.5px] font-medium text-slate-600 bg-slate-200/80 px-2 py-0.5 rounded">
+                          <span className="w-1 h-1 rounded-full bg-slate-400" />
                           Finalizada
                         </span>
                       )}
@@ -552,12 +506,11 @@ export const MobileTodayView: React.FC<MobileTodayViewProps> = ({
 
                   {/* Course Name */}
                   <div>
-                    <h4 className={`font-bold text-xs leading-snug ${isCourseCurrent ? 'text-emerald-950' : isCourseFinished ? 'text-red-950' : 'text-slate-900'}`}>
-                      {course.name}
+                    <h4 className={`font-bold text-xs leading-snug ${isCourseCurrent ? 'text-emerald-950' : isCourseFinished ? 'text-slate-800' : 'text-slate-900'}`}>
+                      {toHumanTitleCase(course.name)}
                     </h4>
                     <p className="text-[10.5px] text-slate-500 font-normal mt-0.5 flex items-center gap-1">
-                      <User className="w-3 h-3 text-slate-400 shrink-0" />
-                      <span className="truncate">{course.professor}</span>
+                      <span className="truncate">{toHumanTitleCase(course.professor)}</span>
                     </p>
                   </div>
 

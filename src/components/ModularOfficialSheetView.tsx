@@ -23,6 +23,7 @@ export const ModularOfficialSheetView: React.FC<ModularOfficialSheetViewProps> =
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [exportResult, setExportResult] = useState<ExportPDFResult | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [pdfOrientation, setPdfOrientation] = useState<'landscape' | 'portrait'>('landscape');
 
   const handleDownloadPDF = async () => {
     const el = document.getElementById('modular-official-sheet');
@@ -30,9 +31,10 @@ export const ModularOfficialSheetView: React.FC<ModularOfficialSheetViewProps> =
     vibrateDevice(50);
     setIsExportingPDF(true);
     try {
+      const isLandscape = pdfOrientation === 'landscape';
       const res = await exportElementToPDF(el, {
-        filename: 'Horario_Oficial_UniGuajira_Licenciatura_C1.pdf',
-        landscape: false
+        filename: `Horario_Oficial_UniGuajira_C1_${isLandscape ? 'Horizontal' : 'Vertical'}.pdf`,
+        landscape: isLandscape
       });
       setExportResult(res);
       setDownloadSuccess(true);
@@ -59,56 +61,91 @@ export const ModularOfficialSheetView: React.FC<ModularOfficialSheetViewProps> =
 
   return (
     <div className="space-y-4">
-      {/* Institutional @page orientation rule (Standard vertical / portrait) */}
+      {/* Institutional @page orientation rule */}
       <style>{`
         @page {
-          size: portrait;
-          margin: 8mm 10mm;
+          size: ${pdfOrientation};
+          margin: ${pdfOrientation === 'landscape' ? '6mm 8mm' : '8mm 10mm'};
         }
       `}</style>
 
-      {/* Control bar limpia y optimizada para móvil (Hidden during print) */}
-      <div className="no-print bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        {/* Selector de módulo compacto */}
-        <div className="flex items-center justify-between sm:justify-start gap-2">
-          <label htmlFor="select-module-sheet" className="text-xs font-semibold text-slate-700 shrink-0">
-            Módulo:
-          </label>
-          <select
-            id="select-module-sheet"
-            value={selectedModule}
-            onChange={e => onSelectModule(e.target.value as any)}
-            className="flex-1 sm:flex-initial px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none cursor-pointer transition-colors"
-          >
-            <option value="all">Todos ({courses.length})</option>
-            <option value="Septiembre - Octubre">Módulo I</option>
-            <option value="Octubre">Módulo II</option>
-            <option value="Noviembre">Módulo III</option>
-          </select>
+      {/* Control bar limpia y optimizada para móvil y PC */}
+      <div className="no-print bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Selector de módulo */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="select-module-sheet" className="text-xs font-semibold text-slate-700 shrink-0">
+              Módulo:
+            </label>
+            <select
+              id="select-module-sheet"
+              value={selectedModule}
+              onChange={e => onSelectModule(e.target.value as any)}
+              className="px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none cursor-pointer transition-colors"
+            >
+              <option value="all">Todos ({courses.length})</option>
+              <option value="Septiembre - Octubre">Módulo I</option>
+              <option value="Octubre">Módulo II</option>
+              <option value="Noviembre">Módulo III</option>
+            </select>
+          </div>
+
+          {/* Selector de Orientación del PDF (Horizontal vs Vertical) */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="select-orientation-sheet" className="text-xs font-semibold text-slate-700 shrink-0">
+              Orientación PDF:
+            </label>
+            <div className="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 text-xs">
+              <button
+                type="button"
+                onClick={() => setPdfOrientation('landscape')}
+                className={`px-2.5 py-1.5 rounded-md font-semibold cursor-pointer transition-all ${
+                  pdfOrientation === 'landscape'
+                    ? 'bg-white text-[#b7191f] shadow-xs font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Formato horizontal: Llena la hoja completa, texto grande y máxima legibilidad"
+              >
+                Horizontal (Recomendado)
+              </button>
+              <button
+                type="button"
+                onClick={() => setPdfOrientation('portrait')}
+                className={`px-2.5 py-1.5 rounded-md font-semibold cursor-pointer transition-all ${
+                  pdfOrientation === 'portrait'
+                    ? 'bg-white text-[#b7191f] shadow-xs font-bold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+                title="Formato vertical"
+              >
+                Vertical
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Botón principal grande fácil de presionar con el pulgar */}
+        {/* Botón principal grande fácil de presionar */}
         <button
           id="btn-download-official-pdf"
           onClick={handleDownloadPDF}
           disabled={isExportingPDF}
-          className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 bg-[#b7191f] hover:bg-[#9c151a] active:bg-[#851216] disabled:opacity-50 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs active:scale-[0.99] transition-all cursor-pointer select-none"
+          className="w-full md:w-auto min-h-[44px] px-5 py-2.5 bg-[#b7191f] hover:bg-[#9c151a] active:bg-[#851216] disabled:opacity-50 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs active:scale-[0.99] transition-all cursor-pointer select-none"
           title="Descargar horario oficial en formato PDF institucional"
         >
           {isExportingPDF ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Generando PDF Oficial...</span>
+              <span>Generando PDF {pdfOrientation === 'landscape' ? 'Horizontal' : 'Vertical'}...</span>
             </>
           ) : downloadSuccess ? (
             <>
               <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-              <span>¡PDF Oficial Descargado!</span>
+              <span>¡PDF Descargado!</span>
             </>
           ) : (
             <>
               <Download className="w-4 h-4" />
-              <span>Descargar PDF Oficial</span>
+              <span>Descargar PDF ({pdfOrientation === 'landscape' ? 'Horizontal' : 'Vertical'})</span>
             </>
           )}
         </button>

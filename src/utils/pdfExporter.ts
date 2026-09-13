@@ -25,7 +25,7 @@ export async function exportElementToPDF(
   options: ExportPDFOptions = {}
 ): Promise<ExportPDFResult> {
   const {
-    filename = 'Horario_Universidad_de_La_Guajira.pdf',
+    filename = 'Horario_Oficial_UniGuajira_C1.pdf',
     landscape = true,
     fitToOnePage = true
   } = options;
@@ -35,28 +35,30 @@ export async function exportElementToPDF(
   const originalScrollY = window.scrollY;
 
   try {
-    // Clone or capture target element with crisp 2x scale
+    const targetWidth = landscape ? 1220 : 860;
+
+    // Clone or capture target element with crisp 2.2x scale
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 2.2,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
-      windowWidth: 1250,
+      windowWidth: targetWidth + 50,
       onclone: (clonedDoc) => {
-        // Ensure all print-only or sheet elements are fully visible and expanded in the clone
+        // Ensure all sheet elements are fully visible and properly proportioned in the clone
         const clonedTarget = clonedDoc.getElementById(element.id);
         if (clonedTarget) {
-          clonedTarget.style.width = '1150px';
-          clonedTarget.style.maxWidth = '1150px';
+          clonedTarget.style.width = `${targetWidth}px`;
+          clonedTarget.style.maxWidth = `${targetWidth}px`;
           clonedTarget.style.boxShadow = 'none';
           clonedTarget.style.border = 'none';
-          clonedTarget.style.padding = '20px';
+          clonedTarget.style.padding = landscape ? '16px 20px' : '20px 16px';
           clonedTarget.style.margin = '0';
         }
       }
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const imgData = canvas.toDataURL('image/jpeg', 0.96);
 
     // Create PDF document (A4 landscape or portrait)
     const orientation = landscape ? 'landscape' : 'portrait';
@@ -70,7 +72,8 @@ export async function exportElementToPDF(
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    const margin = 8; // 8mm margin
+    // Balanced margins: 6mm for landscape (maximizes readable area), 8mm for portrait
+    const margin = landscape ? 6 : 8;
     const usableWidth = pageWidth - margin * 2;
     const usableHeight = pageHeight - margin * 2;
 
@@ -81,7 +84,7 @@ export async function exportElementToPDF(
     const pageCanvasHeight = (canvas.width * usableHeight) / usableWidth;
 
     if (fitToOnePage || canvas.height <= pageCanvasHeight * 1.15) {
-      // Fits on a single page
+      // Fits on a single page, maximizing width & height without distortion
       let printWidth = usableWidth;
       let printHeight = usableWidth / imgRatio;
 
@@ -90,6 +93,7 @@ export async function exportElementToPDF(
         printWidth = usableHeight * imgRatio;
       }
 
+      // Center horizontally and vertically
       const posX = margin + (usableWidth - printWidth) / 2;
       const posY = margin + (usableHeight - printHeight) / 2;
 

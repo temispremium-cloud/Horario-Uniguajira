@@ -2,18 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { ModularCourse, TaskItem } from '../types';
 import { analyzeCurrentSchedule, formatDuration } from '../utils/scheduleStatus';
 import { CourseSessionDatesTimeline } from './CourseSessionDatesTimeline';
+import { toHumanTitleCase, formatCleanTimeRange } from '../utils/textUtils';
 import {
   Search,
   BookOpen,
-  User,
-  Clock,
-  Calendar,
-  MapPin,
-  ChevronRight,
-  Filter,
-  CheckCircle2,
-  FileEdit,
-  Sparkles
+  ChevronRight
 } from 'lucide-react';
 
 interface MobileCoursesViewProps {
@@ -238,24 +231,21 @@ export const MobileCoursesView: React.FC<MobileCoursesViewProps> = ({
                 {/* Course Name */}
                 <div>
                   <h3 className="font-bold text-xs text-slate-900 leading-snug">
-                    {course.name}
+                    {toHumanTitleCase(course.name)}
                   </h3>
-                  <p className="text-[10.5px] text-slate-500 font-normal mt-0.5 flex items-center gap-1">
-                    <User className="w-3 h-3 text-slate-400 shrink-0" />
-                    <span className="truncate">{course.professor}</span>
+                  <p className="text-[10.5px] text-slate-500 font-normal mt-0.5">
+                    <span className="truncate">{toHumanTitleCase(course.professor)}</span>
                   </p>
                 </div>
 
                 {/* Schedule & Classroom Grid */}
                 <div className="grid grid-cols-2 gap-1.5 text-[10.5px] pt-1 border-t border-slate-100">
-                  <div className="flex items-center gap-1.5 text-slate-700">
-                    <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+                  <div className="text-slate-700">
                     <span className="font-medium truncate">
-                      {course.day}: {course.timeRange}
+                      {course.day}: {formatCleanTimeRange(course.timeRange)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-end gap-1 text-slate-700">
-                    <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                  <div className="text-right text-slate-700">
                     <span className="font-medium truncate">
                       {course.classroom || 'Aula por asignar'}
                     </span>

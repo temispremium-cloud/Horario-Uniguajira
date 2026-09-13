@@ -1,7 +1,6 @@
 import React from 'react';
 import { ModularCourse } from '../types';
 import { getCourseSessionsAnalysis } from '../utils/scheduleStatus';
-import { Calendar } from 'lucide-react';
 
 interface Props {
   course: ModularCourse;
@@ -22,7 +21,6 @@ export const CourseSessionDatesTimeline: React.FC<Props> = ({
   return (
     <div className="flex items-center gap-1.5 flex-wrap text-[10px] leading-none">
       <div className={`flex items-center gap-1 shrink-0 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-        <Calendar className="w-3 h-3 opacity-60 shrink-0" />
         <span className="font-medium text-[9.5px]">Fechas:</span>
       </div>
 

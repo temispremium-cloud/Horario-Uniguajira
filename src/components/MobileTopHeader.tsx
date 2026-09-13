@@ -183,25 +183,25 @@ export const MobileTopHeader: React.FC<MobileTopHeaderProps> = ({
           </nav>
         )}
 
-        {/* Right Actions: Install PWA & Notifications Bell */}
+        {/* Right Actions: Install PWA (PC Only) & Notifications Bell */}
         <div className="flex items-center gap-1.5 shrink-0">
           {onOpenInstallModal && (
             <button
               id="btn-header-install-app"
               onClick={onOpenInstallModal}
-              className="min-h-[40px] px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
-              title="Instalar como aplicación en PC (Computador) o Celular"
-              aria-label="Instalar como aplicación en PC o Celular"
+              className="hidden md:flex min-h-[40px] px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-semibold items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+              title="Instalar como aplicación en PC (Computador)"
+              aria-label="Instalar como aplicación en PC"
             >
               <MonitorSmartphone className="w-4 h-4 text-white shrink-0" />
-              <span className="hidden sm:inline font-bold">Instalar App</span>
+              <span className="font-semibold">Instalar App</span>
             </button>
           )}
 
           <button
             id="btn-header-notifications"
             onClick={onOpenNotificationModal}
-            className={`min-h-[40px] min-w-[40px] p-2 rounded-xl text-xs font-medium flex items-center justify-center transition-all cursor-pointer relative border ${
+            className={`min-h-[40px] min-w-[40px] p-2 rounded-lg text-xs font-medium flex items-center justify-center transition-all cursor-pointer relative border ${
               notificationsEnabled
                 ? 'bg-red-50 text-[#b7191f] border-red-200 hover:bg-red-100/80 active:scale-95'
                 : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900 active:scale-95'

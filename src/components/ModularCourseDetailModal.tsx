@@ -17,6 +17,7 @@ import {
 import { shareCourseDetails } from '../utils/backupService';
 import { vibrateDevice } from '../utils/androidBridge';
 import { CourseSessionDatesTimeline } from './CourseSessionDatesTimeline';
+import { toHumanTitleCase, formatCleanTimeRange } from '../utils/textUtils';
 
 interface ModularCourseDetailModalProps {
   course: ModularCourse | null;
@@ -102,7 +103,7 @@ export const ModularCourseDetailModal: React.FC<ModularCourseDetailModalProps> =
               </span>
             </div>
             <h3 className="font-bold text-base leading-snug text-white">
-              {course.name}
+              {toHumanTitleCase(course.name)}
             </h3>
             <p className="text-xs text-slate-400">
               {course.credits} Créditos • {course.hs} Horas Semanales
@@ -125,7 +126,7 @@ export const ModularCourseDetailModal: React.FC<ModularCourseDetailModalProps> =
                 <User className="w-3.5 h-3.5 text-slate-400" /> Docente Asignado
               </span>
               <p className="font-bold text-slate-900 text-xs mt-1">
-                {course.professor}
+                {toHumanTitleCase(course.professor)}
               </p>
             </div>
 
@@ -134,7 +135,7 @@ export const ModularCourseDetailModal: React.FC<ModularCourseDetailModalProps> =
                 <Clock className="w-3.5 h-3.5 text-slate-400" /> Horario y Jornada
               </span>
               <p className="font-bold text-slate-900 text-xs mt-1">
-                {course.day}: {course.timeRange}
+                {course.day}: {formatCleanTimeRange(course.timeRange)}
               </p>
             </div>
           </div>
