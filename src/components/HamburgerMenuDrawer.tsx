@@ -9,7 +9,7 @@ import {
   FileText,
   Download,
   Calendar,
-  Smartphone,
+  MonitorSmartphone,
   CheckCircle2,
   ChevronRight,
   ShieldCheck,
@@ -25,6 +25,7 @@ interface HamburgerMenuDrawerProps {
   onTabChange: (tab: MobileTab) => void;
   onOpenNotificationModal: () => void;
   notificationsEnabled: boolean;
+  onOpenInstallModal?: () => void;
   onDownloadPDF?: () => void;
   isDownloadingPDF?: boolean;
   onExportICS?: () => void;
@@ -38,6 +39,7 @@ export const HamburgerMenuDrawer: React.FC<HamburgerMenuDrawerProps> = ({
   onTabChange,
   onOpenNotificationModal,
   notificationsEnabled,
+  onOpenInstallModal,
   onDownloadPDF,
   isDownloadingPDF = false,
   onExportICS,
@@ -51,18 +53,9 @@ export const HamburgerMenuDrawer: React.FC<HamburgerMenuDrawerProps> = ({
   };
 
   const handleInstallClick = () => {
-    // Look for deferredPrompt stored on window or trigger PWA install event
-    const installEvent = (window as any).__pwaInstallPrompt;
-    if (installEvent && typeof installEvent.prompt === 'function') {
-      installEvent.prompt();
-    } else {
-      // Fallback instruction
-      const isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
-      if (isIOS) {
-        alert('Para instalar en iPhone/iPad:\n1. Toca el botón Compartir de Safari (ícono con flecha hacia arriba).\n2. Selecciona "Añadir a pantalla de inicio".');
-      } else {
-        alert('Para instalar en tu navegador o celular:\nToca el menú del navegador (los 3 puntos ⋮) y selecciona "Instalar aplicación" o "Añadir a pantalla principal".');
-      }
+    onClose();
+    if (onOpenInstallModal) {
+      onOpenInstallModal();
     }
   };
 
@@ -183,20 +176,20 @@ export const HamburgerMenuDrawer: React.FC<HamburgerMenuDrawerProps> = ({
           >
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-2xs">
-                <Smartphone className="w-4 h-4" />
+                <MonitorSmartphone className="w-4 h-4" />
               </div>
               <div>
                 <h3 className="text-xs font-bold text-slate-900 leading-tight">
-                  Instalar como Aplicación
+                  Instalar en PC o Celular
                 </h3>
                 <p className="text-[10.5px] text-slate-500 font-medium">
-                  Funciona sin conexión (Offline)
+                  Windows, Mac, Android e iOS
                 </p>
               </div>
             </div>
 
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              Puedes instalar esta app directamente desde tu navegador en Android, iOS o Windows/Mac con acceso instantáneo desde tu pantalla de inicio.
+              Instala esta aplicación directamente en tu computador o celular para usarla a pantalla completa y sin conexión a internet.
             </p>
 
             <button

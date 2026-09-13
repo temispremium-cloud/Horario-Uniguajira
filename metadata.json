@@ -1,6 +1,6 @@
 {
   "name": "Remix Remix Remix Remix Horario Estudiante UniGuajira",
-  "description": "Horario de clases interactivo y formato oficial para estudiantes de Ingeniería de Sistemas - Universidad de La Guajira",
+  "description": "Horario oficial interactivo, planificador modular y formato institucional para estudiantes de Licenciatura en Educación Básica Primaria (Grupo C1 - Ampliación Uribia) - Universidad de La Guajira",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

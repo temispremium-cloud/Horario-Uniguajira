@@ -15,6 +15,7 @@ import { InAppNotificationBanner } from './components/InAppNotificationBanner';
 import { OfflineAndInstallBanner } from './components/OfflineAndInstallBanner';
 import { NotificationPermissionPrompt } from './components/NotificationPermissionPrompt';
 import { HamburgerMenuDrawer } from './components/HamburgerMenuDrawer';
+import { InstallAppModal } from './components/InstallAppModal';
 import { generateModularICS, downloadModularICSFile } from './utils/modularIcsExporter';
 import { exportElementToPDF } from './utils/pdfExporter';
 import { requestDeviceStoragePermission } from './utils/androidBridge';
@@ -149,6 +150,7 @@ export default function App() {
   const [taskCourseId, setTaskCourseId] = useState<string | undefined>(undefined);
   const [taskToEdit, setTaskToEdit] = useState<TaskItem | null>(null);
   const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
@@ -161,6 +163,9 @@ export default function App() {
 
   const isNotificationModalOpenRef = useRef(isNotificationModalOpen);
   isNotificationModalOpenRef.current = isNotificationModalOpen;
+
+  const isInstallModalOpenRef = useRef(isInstallModalOpen);
+  isInstallModalOpenRef.current = isInstallModalOpen;
 
   const activeTabRef = useRef(activeTab);
   activeTabRef.current = activeTab;
@@ -228,7 +233,13 @@ export default function App() {
       return true;
     }
 
-    // 4. If on a secondary tab, return to previous tab or 'today'
+    // 4. If Install Modal is open, close it
+    if (isInstallModalOpenRef.current) {
+      setIsInstallModalOpen(false);
+      return true;
+    }
+
+    // 5. If on a secondary tab, return to previous tab or 'today'
     if (activeTabRef.current !== 'today') {
       const stack = tabHistoryRef.current;
       if (stack.length > 1) {
@@ -464,6 +475,7 @@ export default function App() {
         onExportICS={handleExportICS}
         onOpenNotificationModal={handleOpenNotificationModal}
         notificationsEnabled={notificationSettings.enabled}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         appIcon={appIcon}
         onGoHome={() => handleTabChange('today')}
         canGoBack={activeTab !== 'today'}
@@ -492,7 +504,7 @@ export default function App() {
         />
 
         {/* PWA Install Banner & Offline Status */}
-        <OfflineAndInstallBanner />
+        <OfflineAndInstallBanner onOpenInstallModal={() => setIsInstallModalOpen(true)} />
 
         {activeTab === 'today' && (
           <MobileTodayView
@@ -603,10 +615,17 @@ export default function App() {
         onTabChange={handleTabChange}
         onOpenNotificationModal={handleOpenNotificationModal}
         notificationsEnabled={notificationSettings.enabled}
+        onOpenInstallModal={() => setIsInstallModalOpen(true)}
         onDownloadPDF={handleDirectDownloadPDF}
         isDownloadingPDF={isDownloadingPDF}
         onExportICS={handleExportICS}
         pendingTasksCount={pendingTasksCount}
+      />
+
+      {/* PWA Install Modal Guide & Prompt (PC & Mobile) */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
       />
     </div>
   );

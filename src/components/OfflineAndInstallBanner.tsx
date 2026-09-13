@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { WifiOff, Download, X, Smartphone, CheckCircle } from 'lucide-react';
-import { isAndroidDevice } from '../utils/androidBridge';
+import { WifiOff, Download, X, MonitorSmartphone, CheckCircle } from 'lucide-react';
+import { isAppInstalled } from '../utils/pwaInstall';
 
 interface OfflineAndInstallBannerProps {
   onInstallSuccess?: () => void;
+  onOpenInstallModal?: () => void;
 }
 
 export const OfflineAndInstallBanner: React.FC<OfflineAndInstallBannerProps> = ({
-  onInstallSuccess
+  onInstallSuccess,
+  onOpenInstallModal
 }) => {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -37,6 +39,11 @@ export const OfflineAndInstallBanner: React.FC<OfflineAndInstallBannerProps> = (
 
   // Listen for PWA beforeinstallprompt event
   useEffect(() => {
+    if (isAppInstalled()) {
+      setShowInstallBanner(false);
+      return;
+    }
+
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -65,8 +72,9 @@ export const OfflineAndInstallBanner: React.FC<OfflineAndInstallBannerProps> = (
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
-      // If iOS or prompt already consumed, show alert instructions
-      alert('Para instalar en iPhone/iPad: Toca el botón Compartir de Safari y selecciona "Añadir a pantalla de inicio".');
+      if (onOpenInstallModal) {
+        onOpenInstallModal();
+      }
       return;
     }
 
@@ -76,10 +84,12 @@ export const OfflineAndInstallBanner: React.FC<OfflineAndInstallBannerProps> = (
       if (outcome === 'accepted') {
         setShowInstallBanner(false);
         setInstalledSuccess(true);
+        if (onInstallSuccess) onInstallSuccess();
       }
       setDeferredPrompt(null);
     } catch (e) {
       console.warn('Error displaying install prompt:', e);
+      if (onOpenInstallModal) onOpenInstallModal();
     }
   };
 
@@ -122,7 +132,7 @@ export const OfflineAndInstallBanner: React.FC<OfflineAndInstallBannerProps> = (
         >
           <CheckCircle className="w-4 h-4 text-emerald-200 shrink-0" />
           <span className="font-medium text-[11.5px]">
-            ¡Aplicación instalada con éxito en tu pantalla de inicio!
+            ¡Aplicación instalada con éxito en tu dispositivo!
           </span>
         </div>
       )}
@@ -132,14 +142,14 @@ export const OfflineAndInstallBanner: React.FC<OfflineAndInstallBannerProps> = (
         <div className="bg-slate-900 text-white p-3 rounded-xl border border-slate-800 shadow-md flex items-center justify-between gap-2.5 animate-in slide-in-from-top duration-200">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-[#b7191f] flex items-center justify-center text-white shrink-0">
-              <Smartphone className="w-4 h-4" />
+              <MonitorSmartphone className="w-4 h-4" />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-white truncate">
-                Instalar App UniGuajira
+                Instalar App en PC o Celular
               </p>
               <p className="text-[10.5px] text-slate-300 truncate">
-                Accede a tu horario sin internet desde tu pantalla de inicio
+                Accede a tu horario sin internet desde tu pantalla de inicio o escritorio
               </p>
             </div>
           </div>

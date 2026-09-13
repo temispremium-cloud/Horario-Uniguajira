@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Menu, Bell, Download, FileText } from 'lucide-react';
+import { ArrowLeft, Menu, Bell, Download, FileText, MonitorSmartphone } from 'lucide-react';
 import { vibrateDevice } from '../utils/androidBridge';
 import { MobileTab } from '../types';
 
@@ -9,6 +9,7 @@ interface MobileTopHeaderProps {
   onExportICS?: () => void;
   onOpenNotificationModal: () => void;
   notificationsEnabled: boolean;
+  onOpenInstallModal?: () => void;
   appIcon?: string;
   onGoHome?: () => void;
   canGoBack?: boolean;
@@ -24,6 +25,7 @@ export const MobileTopHeader: React.FC<MobileTopHeaderProps> = ({
   isDownloadingPDF = false,
   onOpenNotificationModal,
   notificationsEnabled,
+  onOpenInstallModal,
   appIcon = '/icon-192.svg',
   onGoHome,
   canGoBack = false,
@@ -181,8 +183,21 @@ export const MobileTopHeader: React.FC<MobileTopHeaderProps> = ({
           </nav>
         )}
 
-        {/* Right Actions: Notifications Bell */}
-        <div className="flex items-center gap-1 shrink-0">
+        {/* Right Actions: Install PWA & Notifications Bell */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {onOpenInstallModal && (
+            <button
+              id="btn-header-install-app"
+              onClick={onOpenInstallModal}
+              className="min-h-[40px] px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+              title="Instalar como aplicación en PC (Computador) o Celular"
+              aria-label="Instalar como aplicación en PC o Celular"
+            >
+              <MonitorSmartphone className="w-4 h-4 text-white shrink-0" />
+              <span className="hidden sm:inline font-bold">Instalar App</span>
+            </button>
+          )}
+
           <button
             id="btn-header-notifications"
             onClick={onOpenNotificationModal}

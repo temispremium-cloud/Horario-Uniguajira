@@ -1,53 +1,54 @@
 {
-  "id": "/",
+  "id": "./",
   "short_name": "Horario C1",
-  "name": "Horario Móvil UniGuajira - Licenciatura C1",
+  "name": "Horario UniGuajira - Licenciatura C1",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "./icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "./icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "./icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
     },
     {
-      "src": "/icon-192.svg",
-      "type": "image/svg+xml",
-      "sizes": "192x192",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512.svg",
-      "type": "image/svg+xml",
-      "sizes": "512x512",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon.svg",
+      "src": "./icon.svg",
       "type": "image/svg+xml",
       "sizes": "any",
-      "purpose": "maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": "/?source=pwa",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "background_color": "#f8fafc",
   "theme_color": "#b7191f",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui", "window-controls-overlay"],
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
-  "description": "Aplicación móvil oficial del horario modular de Licenciatura en Educación Básica Primaria (Grupo C1 - Ampliación Uribia) - Universidad de La Guajira",
+  "prefer_related_applications": false,
+  "description": "Horario modular interactivo y planificador académico para estudiantes de Licenciatura en Educación Básica Primaria (Grupo C1 - Ampliación Uribia) - Universidad de La Guajira. Compatible con computador (PC) y celular.",
   "lang": "es-CO",
   "dir": "ltr",
   "categories": ["education", "productivity"],
@@ -56,29 +57,29 @@
       "name": "Ver Sesión de Hoy",
       "short_name": "Hoy",
       "description": "Consulta tu próxima clase de la jornada",
-      "url": "/?tab=today",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "url": "./?tab=today",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Tareas y Compromisos",
       "short_name": "Tareas",
       "description": "Revisa notas y tareas pendientes",
-      "url": "/?tab=tasks",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "url": "./?tab=tasks",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Hoja Oficial en PDF",
       "short_name": "Hoja Oficial",
       "description": "Descargar formato oficial de UniGuajira en PDF",
-      "url": "/?tab=official-sheet",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "url": "./?tab=official-sheet",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Cronograma de Fechas",
       "short_name": "Fechas",
       "description": "Calendario de viernes y sábados presenciales",
-      "url": "/?tab=calendar",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "url": "./?tab=calendar",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
